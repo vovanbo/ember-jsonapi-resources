@@ -280,35 +280,35 @@ test('#removeRelationship', function(assert) {
   let authorPostsRelation = {data: [{type: 'posts', id: '1'}], links: {related: ''}};
   assert.deepEqual(author.get('relationships.posts'),
                    authorPostsRelation,
-                   'author relations have a post (hasMany)');
+                   'author relations have a post (toMany)');
 
   let postAuthorRelation   = {data: {type: 'authors', id: '2'}, links: {related: ''}};
   let postCommentsRelation = {data: [{type: 'comments', id: '4'}], links: {related: ''}};
   assert.deepEqual(post.get('relationships.author'),
                    postAuthorRelation,
-                   'post relations have an author (hasOne)');
+                   'post relations have an author (toOne)');
   assert.deepEqual(post.get('relationships.comments'),
                    postCommentsRelation,
-                   'post relations have a comment (hasMany)');
+                   'post relations have a comment (toMany)');
 
   let commentCommenterRelation = {data: {type: 'commenters', id: '3'}, links: {related: ''}};
   let commentPostRelation      = {data: {type: 'posts', id: '1'}, links: {related: ''}};
   assert.deepEqual(comment.get('relationships.commenter'),
                    commentCommenterRelation,
-                   'comment relations have a commenter (hasOne)');
+                   'comment relations have a commenter (toOne)');
   assert.deepEqual(comment.get('relationships.post'),
                    commentPostRelation,
-                   'comment relations have a post (hasOne)');
+                   'comment relations have a post (toOne)');
 
   let commenterCommentsRelation = {data: [{type: 'comments', id: '4'}], links: {related: ''}};
   assert.deepEqual(commenter.get('relationships.comments'),
                    commenterCommentsRelation,
-                   'commenter relations have a comment (hasMany)');
+                   'commenter relations have a comment (toMany)');
 
   // Remove relationships and test for correct representation of relationships.
 
   post.removeRelationship('author', '2');
-  // author relationship must still exist, but empty (hasOne == null)
+  // author relationship must still exist, but empty (toOne == null)
   postAuthorRelation.data = null;
   assert.deepEqual(post.get('relationships.author'),
                    postAuthorRelation,
@@ -319,7 +319,7 @@ test('#removeRelationship', function(assert) {
                    'removed author from post, comments relation unchanged');
 
   post.removeRelationship('comments', '4');
-  // comments relationship must still exist, but empty (hasMany == empty array)
+  // comments relationship must still exist, but empty (toMany == empty array)
   postCommentsRelation.data = [];
   // author relationship must be unchanged.
   assert.deepEqual(post.get('relationships.comments'),
@@ -330,14 +330,14 @@ test('#removeRelationship', function(assert) {
                    'removed comment from post, author relation unchanged');
 
   author.removeRelationship('posts', '1');
-  // posts relation must still exist, but empty (hasMany == empty array)
+  // posts relation must still exist, but empty (toMany == empty array)
   authorPostsRelation.data = [];
   assert.deepEqual(author.get('relationships.posts'),
                    authorPostsRelation,
                    'removed a post from author, posts relation now empty');
 
   comment.removeRelationship('commenter', '3');
-  // comment relation must still exist, but empty (hasOne == null)
+  // comment relation must still exist, but empty (toOne == null)
   commentCommenterRelation.data = null;
   assert.deepEqual(comment.get('relationships.commenter'),
                    commentCommenterRelation,
@@ -356,7 +356,7 @@ test('#removeRelationship', function(assert) {
                    'removed a post from comment, commenter relation unchanged');
 
   commenter.removeRelationship('comments', '4');
-  // comments relation must still exist, but empty (hasMany == empty array)
+  // comments relation must still exist, but empty (toMany == empty array)
   commenterCommentsRelation.data = [];
   assert.deepEqual(commenter.get('relationships.comments'),
                    commenterCommentsRelation,
@@ -430,13 +430,13 @@ test('#didResolveProxyRelation', function(assert) {
     }
   });
 
-  post.didResolveProxyRelation('author', 'hasOne', author);
+  post.didResolveProxyRelation('author', 'toOne', author);
 
   assert.ok(post.get('relationships.author.data'), 'author data is setup');
   assert.equal(post.get('relationships.author.data.type'), 'authors', 'relation data set for authors type');
   assert.equal(post.get('relationships.author.data.id'), '2', 'relation data set with author id: 2');
 
-  author.didResolveProxyRelation('posts', 'hasMany', post);
+  author.didResolveProxyRelation('posts', 'toMany', post);
 
   assert.ok(author.get('relationships.posts.data'), 'post data is setup');
   assert.equal(author.get('relationships.posts.data')[0].type, 'posts', 'relation data set for posts type');
